@@ -4,7 +4,7 @@ const port = 3000;
 const {authCheck}=require('./middlewares/auth')
  const {connectDb}=require("./config/database");
  const User= require("./models/user");
-
+const bcrypt = require('bcrypt');
 
 
 
@@ -31,18 +31,36 @@ app.get('/userinfo',async(req,res)=>{
      res.status(500).send("Internal Server Error");
     }
  }) 
+app.patch('/updateuser',async(req,res)=>{
+    const{_id}=req.body;
 
+    try{
+        const updateUser = await User.findByIdAndUpdate(
+            _id,
+            req.body,
+            { runValidators: true, new: true }
+          );
+        res.status(200).send("User updated successfully");
+    }
+    catch(err){
+        console.error("Error updating user:", err);
+        res.status(500).send("Invalis User ID or Internal Server Error");
+    }
+
+})
 
 app.post('/signup',async(req,res)=>{
    // console.log("Request body:", req.body);
+   
     const user=new User(req.body);
     try{
         await user.save();
+        console.log("User created successfully:");
         res.status(201).send("User created successfully");
     }
     catch(err){
         console.error("Error creating user:", err);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(err.message || "Internal Server Error");
     }
 })
 
