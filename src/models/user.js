@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'); // You don't need the destructuring
 var validator = require('validator');
+const jwt=require('jsonwebtoken');
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -95,5 +96,9 @@ const userSchema = new mongoose.Schema({
 
     }
 });
+userSchema.methods.getJWT=async function(){
+    return jwt.sign({_id:this._id},'DEVTINDER34')
+
+}
 
 module.exports = mongoose.model("User", userSchema);
